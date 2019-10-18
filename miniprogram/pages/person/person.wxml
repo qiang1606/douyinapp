@@ -1,0 +1,3 @@
+<view class="video-container">
+  <video class="video-item" id="{{'myVideo-'+index}}" wx:for="{{videoUrl}}" src="{{item}}" controls bindended="onPlayEnd"></video>
+</view>
