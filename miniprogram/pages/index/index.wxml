@@ -9,8 +9,15 @@
       class="userinfo-avatar"
       style="background-image: url({{avatarUrl}})"
     ></button>
-    <view>
-      <button class="userinfo-nickname" bindtap="onGetUserInfo">小姐姐，点我,我超甜</button>
+    
+    <view wx:if="{{userInfo.nickName}}">
+      <button class="userinfo-nickname">
+      <text wx:if="{{userInfo.gender}}">小哥哥，</text>
+      <text wx:else>小姐姐，</text>
+      欢迎体验！</button>
+    </view>
+    <view wx:else>
+      <button class="userinfo-nickname" open-type="getUserInfo"  bindgetuserinfo="onGetUserInfo">点我，我超甜哦！</button>
     </view>
   </view>
 

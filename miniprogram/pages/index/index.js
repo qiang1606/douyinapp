@@ -1,13 +1,11 @@
 //index.js
 const app = getApp()
 
+
 Page({
   data: {
     avatarUrl: './user-unlogin.png',
     userInfo: {},
-    logged: false,
-    takeSession: false,
-    requestResult: '',
     allVideo: [],
   },
 
@@ -18,7 +16,6 @@ Page({
       })
       return
     }
-
     // 获取用户信息
     wx.getSetting({
       success: res => {
@@ -36,9 +33,9 @@ Page({
       }
     })
   },
-
-  onGetUserInfo: function(e) {
-    if (!this.data.logged && e.detail.userInfo) {
+  // 获取用户信息
+  onGetUserInfo: function (e) {
+    if (e.detail.userInfo) {
       this.setData({
         logged: true,
         avatarUrl: e.detail.userInfo.avatarUrl,
@@ -46,30 +43,8 @@ Page({
       })
     }
   },
-
-  onGetOpenid: function() {
-    // 调用云函数
-    wx.cloud.callFunction({
-      name: 'login',
-      data: {},
-      success: res => {
-        console.log('[云函数] [login] user openid: ', res.result.openid)
-        app.globalData.openid = res.result.openid
-        wx.navigateTo({
-          url: '../userConsole/userConsole',
-        })
-      },
-      fail: err => {
-        console.error('[云函数] [login] 调用失败', err)
-        wx.navigateTo({
-          url: '../deployFunctions/deployFunctions',
-        })
-      }
-    })
-  },
-
   // 上传视频
-  doUpload: function () {
+  doUpload: function() {
     // 选择视频
     var self = this;
     wx.chooseVideo({
@@ -81,23 +56,23 @@ Page({
           title: '上传中...',
           mask: false,
         })
-        self.data.allVideo.push(res.tempFilePath);
-        // 存储
-        wx.setStorage({
-          key: "allVideo",
-          data: JSON.stringify(self.data.allVideo)
-        })
 
-        wx.getStorage({
-          key: 'allVideo',
-          success(res) {
+        wx.cloud.callFunction({
+          // 云函数名称
+          name: 'addVideo',
+          // 传给云函数的参数
+          data: {
+            url: res.tempFilePath
+          },
+          success: function(res) {
             wx.hideLoading();
             wx.showToast({
               // 上传成功
               title: "上传成功",
               icon: "success",
             })
-          }
+          },
+          fail: console.error
         })
       }
     })
